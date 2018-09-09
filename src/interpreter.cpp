@@ -6,6 +6,7 @@
 #include <iostream>
 #include <numeric>
 #include "ast.hpp"
+#include "utils.h"
 
 std::shared_ptr<ast::value_node<int>> read_value() {
   auto res = std::make_shared<ast::value_node<int>>();
@@ -67,17 +68,13 @@ int eval(std::shared_ptr<ast::list_node> root) {
   std::vector<int> args;
 
   for (int i = 1; i < root->args.size(); i++) {
-    auto val_node = std::dynamic_pointer_cast<ast::value_node<int>>(root->args[i]);
-    if (val_node) {
-      args.push_back(val_node->value);
-      continue;
-    }
-    auto list_node = std::dynamic_pointer_cast<ast::list_node>(root->args[i]);
-    if (list_node) {
-      args.push_back(eval(list_node));
-      continue;
-    }
-    throw std::runtime_error("can not evaluate value");
+    utils::typecase(root->args[i],
+    [&args](std::shared_ptr<ast::value_node<int>> node) {
+      args.push_back(node->value);
+    },
+    [&args](std::shared_ptr<ast::list_node> node) {
+      args.push_back(eval(node));
+    });
   }
 
   return do_op(op->value, args);
