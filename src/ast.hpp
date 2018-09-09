@@ -29,8 +29,15 @@ struct base_node {
   virtual ~base_node() = default;
 };
 
+struct atom_node : base_node {
+
+};
+
+struct symbol_node : atom_node {
+  std::string name;
+};
 template <typename T>
-struct value_node : base_node {
+struct value_node : atom_node {
   using value_type = T;
   T value;
   types type;
