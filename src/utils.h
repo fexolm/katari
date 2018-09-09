@@ -43,12 +43,12 @@ bool typecaseHelper( std::shared_ptr<Base> base, std::function<void(std::shared_
 
 }
 template<typename Base>
-void typecase(std::shared_ptr<Base>) {
-  assert(false);
+bool typecase(std::shared_ptr<Base>) {
+  return false;
 }
 
 template<typename Base, typename FirstSubclass, typename... RestOfSubclasses>
-void typecase(
+bool typecase(
     std::shared_ptr<Base> base,
     FirstSubclass &&first,
     RestOfSubclasses &&... rest) {
@@ -57,10 +57,10 @@ void typecase(
   using Function = std::function<Signature>;
 
   if (internal::typecaseHelper(base, (Function)first)) {
-    return;
+    return true;
   }
   else {
-    typecase(std::forward<std::shared_ptr<Base>>(base), rest...);
+    return typecase(std::forward<std::shared_ptr<Base>>(base), rest...);
   }
 }
 
